@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/react5f7pm/scan.games.crawler#readme",
   "dependencies": {
+    "cheerio": "^1.0.0-rc.3",
     "cross-env": "^7.0.2",
     "dotenv": "^8.2.0",
     "got": "^10.6.0",
