@@ -1,5 +1,5 @@
 import mongoose from 'mongoose'
-import SaleModel from './sale.mjs'
+import SaleSchema from './sale.mjs'
 
 const { Schema } = mongoose
 
@@ -8,10 +8,10 @@ const GameSchema = new Schema({
   publisher: String, // Nexon
   thumbUrl: String,
   coverUrl: String,
-  sales: [ SaleModel.SaleSchema ],
+  sales: [ SaleSchema ],
   platforms: [{
-    _id: mongoose.Types.ObjectId, // Steam
-    appid: String
+    type: mongoose.Types.ObjectId, // Steam
+    ref: 'Platform'
   }],
   description: String,
   metacritic: {
@@ -19,7 +19,7 @@ const GameSchema = new Schema({
     url: String,
   },
   genres: [ String ],
-  dateCreated: {
+  createDate: {
     type: Date,
     default: Date.now, // 현재 날짜를 기본값으로 사용
   }
