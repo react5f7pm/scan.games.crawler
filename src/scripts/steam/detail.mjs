@@ -1,10 +1,9 @@
 import got from 'got';
-import apps from '../../../apps';
-import db from '../../db'
-import gameSchema from '../../models/game'
-import platformSchema from '../../models/platform'
-import saleSchema from '../../models/sale'
-import steamSchema from '../../models/steam'
+import apps from '../../../apps.mjs';
+import db from '../../db.mjs'
+import gameSchema from '../../models/service/game.mjs'
+import saleSchema from '../../models/service/sale.mjs'
+import steamSchema from '../../models/crawler/steam.mjs'
 
 (async () => {
   // Get connections for databases
@@ -12,12 +11,9 @@ import steamSchema from '../../models/steam'
   const crawlerDB = await db.getConnection('crawlerDB');
   
   // Create model instances
-  const Platform = serviceDB.model('platforms', platformSchema);
   const Game = serviceDB.model('games', gameSchema);
   const Sale = serviceDB.model('sales', saleSchema);
   const Steam = crawlerDB.model('steams', steamSchema);
-
-  let steamDoc = await Platform.findOne({name: 'steam'})
 
   // Make crawling targts
   let crawled = await Steam.find({})
@@ -52,13 +48,11 @@ import steamSchema from '../../models/steam'
       thumbUrl: data.header_image,
       coverUrl: data.screenshots[0].path_pull,
       sales: [],
-      platforms: [steamDoc],
       description: data.short_description,
       genres: data.genres.map(genre => genre.description)
     })
 
     const saleDoc = await Sale.create({
-      platform: steamDoc,
       game: gameDoc,
       gameUuid: appid,
       price: 0,

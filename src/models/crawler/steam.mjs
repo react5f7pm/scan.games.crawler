@@ -13,10 +13,3 @@ const steamSchema = new Schema({
 })
 
 export default steamSchema;
-
-// export const Steam = mongoose.model('Steam', steamSchema)
-
-// export default { 
-//   steamSchema, 
-//   Steam
-// }
