@@ -32,6 +32,12 @@ import steamSchema from '../../models/crawler/steam.mjs'
     if (!res) return;
     const appid = Object.keys(res)[0];
     const data = res[appid].data;
+    if (res[appid].success == false) {
+      return await Steam.create({
+        appid: appid,
+        success: res[appid].success
+      })
+    }
     // Create crawling log
     // TODO: Add more fields to track history
     await Steam.create({
@@ -53,6 +59,7 @@ import steamSchema from '../../models/crawler/steam.mjs'
     })
 
     const saleDoc = await Sale.create({
+      platform: 'steam',
       game: gameDoc,
       gameUuid: appid,
       price: 0,
