@@ -21,22 +21,23 @@ import steamSchema from '../../models/crawler/steam.mjs'
   crawled = crawled.map(document => document.appid);
   const filteredApps = apps.filter(app => !crawled.includes(app.appid.toString()));
 
-  const baseUrl = 'https://store.steampowered.com/api/appdetails?appids='
+  const baseUrl = 'https://store.steampowered.com/api/appdetails?cc=kr&l=kr&appids=';
+  const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
   const requestPromise = filteredApps.map(async (app, idx) => {
-    if (idx > 1) return;
     if (await Steam.exists({appid: app.appid})) return;
-    return got(baseUrl + app.appid).json();
-  });
-  const responses = await Promise.all(requestPromise);
-  const createPromise = responses.map(async (res) => {
+
+    // Request app detail
+    await delay(1000 * idx); // Set Delay to avoid 429
+    const res = await got(baseUrl + app.appid).json();
     if (!res) return;
+
     const appid = Object.keys(res)[0];
     const data = res[appid].data;
     if (res[appid].success == false) {
       return await Steam.create({
         appid: appid,
         success: res[appid].success
-      })
+      });
     }
     // Create crawling log
     // TODO: Add more fields to track history
@@ -56,7 +57,7 @@ import steamSchema from '../../models/crawler/steam.mjs'
       sales: [],
       description: data.short_description,
       genres: data.genres.map(genre => genre.description)
-    })
+    });
 
     const saleDoc = await Sale.create({
       platform: 'steam',
@@ -65,11 +66,11 @@ import steamSchema from '../../models/crawler/steam.mjs'
       price: 0,
     });
 
-    gameDoc.sales.push(saleDoc)
+    gameDoc.sales.push(saleDoc);
     return await gameDoc.save()
-  })
+  });
+  const creates = await Promise.all(requestPromise);
 
-  const creates = await Promise.all(createPromise);
   // TODO: Handle post processing for the end of crawling
   serviceDB.close();
   crawlerDB.close();
