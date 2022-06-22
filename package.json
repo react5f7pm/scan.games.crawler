@@ -19,7 +19,7 @@
   "dependencies": {
     "cross-env": "^7.0.2",
     "dotenv": "^8.2.0",
-    "got": "^10.6.0",
+    "got": "^11.8.5",
     "mongoose": "^5.9.4"
   },
   "devDependencies": {
